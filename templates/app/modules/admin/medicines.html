@@ -1,0 +1,254 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}Medicines{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <form>
+            <div class="form-row">
+                <div class="col-1">
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                        data-target="#modalToAdd">
+                        <i class="material-icons-round align-middle">add_circle</i>
+                        <span class="align-middle">
+                            Add
+                        </span>
+                    </button>
+                </div>
+                <div class="col-10">
+                    <input type="text" class="form-control" placeholder="Search...">
+                </div>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-primary btn-block"> Search </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="height: 30em;" class="card-body overflow-auto">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Expiration</th>
+                    <th scope="col">Laboratory</th>
+                    <th scope="col">Provider</th>
+                    <th scope="col">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in meds %}
+                <tr>
+                    <td>{{ med[1] }}</td>
+                    <td>{{ med[2] }}</td>
+                    <td>{{ med[3] }}</td>
+                    <td>{{ med[4] }}</td>
+                    <td class="row">
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-primary btn-block" title="Edit Medicine"
+                                data-toggle="modal" data-target="#modalToEdit{{ med[0] }}">
+                                <i class="material-icons-round align-middle">edit</i>
+                            </button>
+                        </div>
+                        <div class="col-sm-6">
+                            {% if med[5] == '0' %}
+                            <button type="submit" class="btn btn-danger btn-block" data-toggle="modal"
+                                title="Delete Medicine" data-target="#modalToDelete{{ med[0] }}">
+                                <i class="material-icons-round align-middle">delete</i>
+                            </button>
+                            {% else %}
+                            <button type="submit" class="btn btn-warning btn-block" data-toggle="modal"
+                                title="Restore Medicine" data-target="#modalToRestore{{ med[0] }}">
+                                <i class="material-icons-round align-middle">restore_from_trash</i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# MODAL TO ADD #}
+<div class="modal fade" id="modalToAdd" tabindex="-1" role="dialog" aria-labelledby="Modal to Add" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Add Medicine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/medicines/add" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiration">Expiration</label>
+                        <input type="date" class="form-control" id="expiration" name="expiration">
+                    </div>
+                    <div class="form-group">
+                        <label for="laboratories">Laboratories</label>
+                        <select class="form-control" id="laboratories" name="laboratories">
+                            {% for lab in labs %}
+                            {% if lab[5] == '0' %}
+                            <option value="{{ lab[1] }}">{{ lab[1] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="providers">Providers</label>
+                        <select class="form-control" id="providers" name="providers">
+                            {% for prov in provs %}
+                            {% if prov[5] == '0' %}
+                            <option value="{{ prov[1] }}">{{ prov[1] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# MODAL TO DELETE OR RESTORE #}
+{% for med in meds %}
+{% if med[5] == '0' %}
+{{ deleteModal(med[0], med[1]) }}
+{% else %}
+{{ restoreModal(med[0], med[1]) }}
+{% endif %}
+
+{{ editModal(med[0], med[1], med[2], med[3], med[4]) }}
+{% endfor %}
+
+{% endblock %}
+
+{# EDIT MODAL GENERATOR #}
+{% macro editModal(id, name, expiration, laboratorie, provider) -%}
+<div class="modal fade" id="modalToEdit{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Edit"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Edit Laboratorie</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/medicines/edit" method="POST">
+                    <input type="hidden" name="id" value="{{ id }}">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiration">Expiration</label>
+                        <input type="date" class="form-control" id="expiration" name="expiration"
+                            value="{{ expiration }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="laboratories">Laboratories</label>
+                        <select class="form-control" id="laboratories" name="laboratories">
+                            {% for lab in labs %}
+                            {% if lab[5] == '0' %}
+                            <option value="{{ lab[1] }}" {% if lab[1] == laboratorie %} selected {% endif %}>
+                                {{ lab[1] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="providers">Providers</label>
+                        <select class="form-control" id="providers" name="providers">
+                            {% for prov in provs %}
+                            {% if prov[5] == '0' %}
+                            <option value="{{ prov[1] }}" {% if prov[1] == provider %} selected {% endif %}>
+                                {{ prov[1] }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Edit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{# DELETE MODAL GENERATOR #}
+{% macro deleteModal(id, name) -%}
+<div class="modal fade" id="modalToDelete{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Delete"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Delete Medicines</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete {{ name }}?
+            </div>
+            <div class="modal-footer">
+                <form action="/admin/medicines/delete" method="POST">
+                    <input type="hidden" name="value" value="{{ id }}">
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{# RESTORE MODAL GENERATOR #}
+{% macro restoreModal(id, name) -%}
+<div class="modal fade" id="modalToRestore{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Restore"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Restore Medicines</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to restore {{ name }}?
+            </div>
+            <div class="modal-footer">
+                <form action="/admin/medicines/restore" method="POST">
+                    <input type="hidden" name="value" value="{{ id }}">
+                    <button type="submit" class="btn btn-warning">
+                        Restore
+                    </button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

@@ -1,0 +1,34 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}Hospital{% endblock %}
+
+{% block main %}
+<div class="card my-md-2">
+    <div class="card-header font-weight-bolder">
+        Hospital
+    </div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-3 my-md-2">
+                <a href="#" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">today</i>
+                    <p>
+                        Appointments
+                    </p>
+                </a>
+            </div>
+
+            <div class="col-md-3 my-md-2">
+                <a href="#" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">library_books</i>
+                    <p>
+                        Prescriptions
+                    </p>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

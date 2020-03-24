@@ -1,0 +1,61 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block main %}
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-4">Wellcome back to Nucleo Medico, {{ userName }}!</h1>
+        <p class="lead">We give you a quick view of today.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header text-center font-weight-bolder">
+                Appointments
+            </div>
+            <div class="card-body mx-auto">
+                <button type="button" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">today</i>
+                    <p>
+                        Today
+                        <span class="badge badge-light">
+                            {% if numAppointments is defined %}
+                            {{ numAppointments }}
+                            {% else %}
+                            0
+                            {% endif %}
+                        </span>
+                    </p>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header text-center font-weight-bolder">
+                Medicines
+            </div>
+            <div class="card-body mx-auto">
+                {% if numMedicines < 1 %}
+                <button type="button" class="btn btn-block btn-success">
+                    <i style="padding: .5em;" class="material-icons-round">local_pharmacy</i>
+                    <p>
+                        OK
+                    </p>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-block btn-danger">
+                    <i style="padding: .5em;" class="material-icons-round">local_pharmacy</i>
+                    <p>
+                        Missing <span class="badge badge-light">{{ numMedicines }}</span>
+                    </p>
+                </button>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

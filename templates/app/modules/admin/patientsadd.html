@@ -1,0 +1,153 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block main %}
+{% if title == 'Edit Patient' %}
+<form action="/admin/patients/edit" method="POST">
+    <input type="hidden" name="toEdit" value="{{ pat[0] }}">
+    {% else %}
+    <form action="/admin/patients/add" method="POST">
+        {% endif %}
+        <div class="card my-md-2">
+            <div class="card-header font-weight-bolder">
+                Personal
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ pat[1] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="birthday">Birthday</label>
+                        <input type="date" class="form-control" id="birthday" name="birthday" value="{{ pat[2] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">E-Mail</label>
+                        <input type="text" class="form-control" id="email" name="email" value="{{ pat[4] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="id">ID</label>
+                        <input type="text" class="form-control" id="id" name="id" value="{{ pat[7] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="phone">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ pat[14] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="hPhone">Home phone</label>
+                        <input type="tel" class="form-control" id="hPhone" name="hPhone" value="{{ pat[15] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="oPhone">Office Phone</label>
+                        <input type="tel" class="form-control" id="oPhone" name="oPhone" value="{{ pat[16] }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card my-md-2">
+            <div class="card-header font-weight-bolder">
+                Life Insurance
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    {% if title == 'Add Patient' %}
+                    <div class="form-group col-md-12">
+                        <label for="lin">ID</label>
+                        <input type="text" class="form-control" id="lin" name="lin">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <button type="button" class="btn btn-primary">Get Number</button>
+                    </div>
+                    {% else %}
+                    <div class="form-group col-md-12">
+                        <label for="lin">ID</label>
+                        <input type="text" class="form-control" id="lin" name="lin" placeholder="{{ pat[8] }}" readonly>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card my-md-2">
+            <div class="card-header font-weight-bolder">
+                Information
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="occupation">Occupation</label>
+                        <input type="text" class="form-control" id="occupation" name="occupation" value="{{ pat[5] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Gender</label>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="maleRadio"
+                                        value="male" {% if title == 'Add Patient' %} checked {% endif %} {% if pat[3] == 'M' %} checked {% endif %}>
+                                    <label class="form-check-label" for="maleRadio">
+                                        Male
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="femaleRadio"
+                                        value="female" {% if pat[3] == 'F' %} checked {% endif %}>
+                                    <label class="form-check-label" for="femaleRadio">
+                                        Female
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="scholarship">Scholarship</label>
+                        <input type="text" class="form-control" id="scholarship" name="scholarship"
+                            value="{{ pat[6] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="mStatus">Marital status</label>
+                        <input type="text" class="form-control" id="mStatus" name="mStatus" value="{{ pat[9] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="{{ pat[10] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="suburb">Suburb</label>
+                        <input type="text" class="form-control" id="suburb" name="suburb" value="{{ pat[11] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="government">Government</label>
+                        <input type="text" class="form-control" id="government" name="government" value="{{ pat[12] }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="{{ pat[13] }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card my-md-2">
+            {% if title == 'Add Patient' %}
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="submit" class="btn btn-primary btn-block">Add</button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <button type="submit" class="btn btn-primary btn-block">Edit</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </form>
+    {% endblock %}

@@ -1,0 +1,72 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block main %}
+<div class="card my-md-2">
+    <div class="card-header font-weight-bolder">
+        Supplies
+    </div>
+    <div class="card-body">
+        <div class="row">
+            
+            <div class="col-md-3 my-md-2">
+                <a href="/admin/laboratories" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">domain</i>
+                    <p>
+                        Laboratories
+                    </p>
+                </a>
+            </div>
+
+            <div class="col-md-3 my-md-2">
+                <a href="/admin/providers" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">local_shipping</i>
+                    <p>
+                        Providers
+                    </p>
+                </a>
+            </div>
+
+            <div class="col-md-3 my-md-2">
+                <a href="/admin/medicines" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">local_pharmacy</i>
+                    <p>
+                        Medicines
+                    </p>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card my-md-2">
+    <div class="card-header font-weight-bolder">
+        Control
+    </div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-3 my-md-2">
+                <a href="/admin/patients" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">account_box</i>
+                    <p>
+                        Patients
+                    </p>
+                </a>
+            </div>
+
+            <div class="col-md-3 my-md-2">
+                <a href="/admin/reports" class="btn btn-block btn-primary">
+                    <i style="padding: .5em;" class="material-icons-round">file_copy</i>
+                    <p>
+                        Reports
+                    </p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "./main.html" %}
+
+{% block navbar %}
+{% include "home/partials/navbar.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+            <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active bg-primary">
+                <img src="{{ url_for('static', filename='images/image1.jpg') }}" class="mx-auto d-block w-50" alt="...">
+                <div style="bottom: 0;" class="carousel-caption d-none d-md-block text-reset">
+                    <h2 class="font-weight-bold">Nucleo Medico</h2>
+                    <h5 class="font-weight-normal">Your best option</h5>
+                </div>
+            </div>
+            <div class="carousel-item bg-primary">
+                <img src="{{ url_for('static', filename='images/image2.jpg') }}" class="mx-auto d-block w-50" alt="...">
+                <div style="bottom: 70%;" class="carousel-caption d-none d-md-block text-reset">
+                    <h2 class="font-weight-bold">Simple</h2>
+                    <h5 class="font-weight-normal">Everything clearly thanks to our modules</h5>
+                </div>
+            </div>
+            <div class="carousel-item bg-primary">
+                <img src="{{ url_for('static', filename='images/image3.jpg') }}" class="mx-auto d-block w-50" alt="...">
+                <div style="bottom: 0;" class="carousel-caption d-none d-md-block text-reset">
+                    <h2 class="font-weight-bold">Versatile</h2>
+                    <h5 class="font-weight-normal">Easy to implement</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
