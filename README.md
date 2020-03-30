@@ -11,5 +11,5 @@ __Módulo III: Sistemas Distribuidos__
 __Administrador Nucleo Medico__
 
 ### ALUMNOS
-__Uziel Cocolan Flores__
+__Uziel Cocolan Flores__  
 __Miguel Gonzalez Carlos__
