@@ -25,7 +25,7 @@
             </div>
         </form>
     </div>
-    <div style="height: 30em;" class="card-body overflow-auto">
+    <div style="max-height: 30em;" class="card-body overflow-auto">
         <table class="table table-hover">
             <thead class="thead-dark">
                 <tr>
@@ -51,13 +51,13 @@
                             </button>
                         </div>
                         <div class="col-sm-6">
-                            {% if lab[5] == '0' %}
-                            <button type="submit" class="btn btn-danger btn-block" data-toggle="modal"
+                            {% if lab[5] == 0 %}
+                            <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
                                 title="Delete Laboratorie" data-target="#modalToDelete{{ lab[0] }}">
                                 <i class="material-icons-round align-middle">delete</i>
                             </button>
                             {% else %}
-                            <button type="submit" class="btn btn-warning btn-block" data-toggle="modal"
+                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal"
                                 title="Restore Laboratorie" data-target="#modalToRestore{{ lab[0] }}">
                                 <i class="material-icons-round align-middle">restore_from_trash</i>
                             </button>
@@ -104,16 +104,13 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
         </div>
     </div>
 </div>
 
 {# MODAL TO DELETE OR RESTORE #}
 {% for lab in labs %}
-    {% if lab[5] == '0' %}
+    {% if lab[5] == 0 %}
         {{ deleteModal(lab[0], lab[1]) }}
     {% else %}
         {{ restoreModal(lab[0], lab[1]) }}
@@ -160,9 +157,6 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
         </div>
     </div>
 </div>
@@ -184,13 +178,12 @@
                 Are you sure to delete {{ name }}?
             </div>
             <div class="modal-footer">
-                <form action="/admin/laboratories/delete" method="POST">
+                <form action="{{ url_for('laboratories.laboratoriesDelete') }}" method="POST">
                     <input type="hidden" name="value" value="{{ id }}">
                     <button type="submit" class="btn btn-danger">
                         Delete
                     </button>
                 </form>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -219,7 +212,6 @@
                         Restore
                     </button>
                 </form>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

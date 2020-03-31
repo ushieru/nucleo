@@ -1,62 +1,80 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
+from src.routes.warps.wraps import loginRequired, onlyPOST
+from src import mysql
 
 providersRoutes = Blueprint('providers', __name__)
 
-provs = [["0", "Prov1 Test", "Prov1@test.com", "address # 00", "0000000000", "0"],
-         ["1", "Prov2 Test", "Prov2@test.com", "address # 11", "0000000000", "0"],
-         ["2", "Prov3 Test", "Prov3@test.com", "address # 22", "0000000000", "0"],
-         ["3", "Prov4 Test", "Prov4@test.com", "address # 33", "0000000000", "1"],
-         ["4", "Prov5 Test", "Prov5@test.com", "address # 44", "0000000000", "1"]]
-provscount = 5
 
 @providersRoutes.route('/providers')
+@loginRequired
 def providers():
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""SELECT `com_nucleo_medico_proveedores`.`id`, `com_nucleo_medico_proveedores`.`name`, `com_nucleo_medico_proveedores`.`email`, `com_nucleo_medico_proveedores`.`address`, `com_nucleo_medico_proveedores`.`telephone`, `com_nucleo_medico_proveedores`.`isDelete`
+                    FROM `com_nucleo_medico_proveedores` 
+                    INNER JOIN  `com_nucleo_medico_user`
+                    ON `com_nucleo_medico_proveedores`.`own` LIKE `com_nucleo_medico_user`.`id`
+                    WHERE `com_nucleo_medico_user`.`id` LIKE %s""", (session['id']))
+
+    provs = cursor.fetchall()
+
     return render_template('app/modules/admin/providers.html', provs=provs)
 
-@providersRoutes.route('/providers/add', methods=['GET', 'POST'])
-def providersAdd():
-    if request.method == "GET":
-        return redirect(url_for("control.nucleo"))
 
-    if request.method == "POST":
-        global provscount
-        provs.append([str(provscount), request.form.get("name"), request.form.get(
-            "email"), request.form.get("address"), request.form.get("phone"), "0"])
-        provscount += 1
-        return redirect(url_for("providers.providers"))
+@providersRoutes.route('/providers/add', methods=['GET', 'POST'])
+@onlyPOST
+@loginRequired
+def providersAdd():
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""INSERT INTO `com_nucleo_medico_proveedores`(`own`, `name`, `email`, `address`, `telephone`, `isDelete`)
+                    VALUES (%s, %s,  %s,  %s,  %s, 0)""",
+                   (session['id'], request.form['name'], request.form['email'], request.form['address'], request.form['phone']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for("providers.providers"))
+
 
 @providersRoutes.route('/providers/edit', methods=['GET', 'POST'])
+@onlyPOST
+@loginRequired
 def providersEdit():
-    if request.method == "GET":
-        return redirect(url_for("control.nucleo"))
+    cursor = mysql.get_db().cursor()
 
-    if request.method == "POST":
-        for prov in provs:
-            if prov[0] == request.form.get("id"):
-                prov[1] = request.form.get("name")
-                prov[2] = request.form.get("email")
-                prov[3] = request.form.get("address")
-                prov[4] = request.form.get("phone")
-                return redirect(url_for("providers.providers"))
+    cursor.execute("""UPDATE `com_nucleo_medico_proveedores` SET `name`=%s,`email`=%s,`address`=%s,`telephone`=%s 
+                    WHERE `id` = %s""",
+                   (request.form['name'], request.form['email'], request.form['address'], request.form['phone'], request.form['id']))
+
+    mysql.get_db().commit()
+    return redirect(url_for("providers.providers"))
+
 
 @providersRoutes.route('/providers/delete', methods=['GET', 'POST'])
+@onlyPOST
+@loginRequired
 def providersDelete():
-    if request.method == "GET":
-        return redirect(url_for("control.nucleo"))
+    cursor = mysql.get_db().cursor()
 
-    if request.method == "POST":
-        for prov in provs:
-            if prov[0] == request.form.get("value"):
-                prov[5] = "1"
-                return redirect(url_for("providers.providers"))
+    cursor.execute("""UPDATE `com_nucleo_medico_proveedores` 
+                    SET  `isDelete`= 1 
+                    WHERE `id` LIKE %s""",
+                   (request.form['value']))
+
+    mysql.get_db().commit()
+    return redirect(url_for("providers.providers"))
+
 
 @providersRoutes.route('/providers/restore', methods=['GET', 'POST'])
+@onlyPOST
+@loginRequired
 def providersRestore():
-    if request.method == "GET":
-        return redirect(url_for("control.nucleo"))
+    cursor = mysql.get_db().cursor()
 
-    if request.method == "POST":
-        for prov in provs:
-            if prov[0] == request.form.get("value"):
-                prov[5] = "0"
-                return redirect(url_for("providers.providers"))
+    cursor.execute("""UPDATE `com_nucleo_medico_proveedores` 
+                    SET  `isDelete`= 0
+                    WHERE `id` LIKE %s""",
+                   (request.form['value']))
+
+    mysql.get_db().commit()
+    return redirect(url_for("providers.providers"))
