@@ -42,19 +42,20 @@ def signin():
     if request.method == "POST":
         cursor = mysql.get_db().cursor()
 
-        cursor.execute(
-            "SELECT * FROM `com_nucleo_medico_user` WHERE `com_nucleo_medico_user`.`email` LIKE %s", (request.form['email']))
+        if request.form['email']:
+            cursor.execute(
+                "SELECT * FROM `com_nucleo_medico_user` WHERE `com_nucleo_medico_user`.`email` LIKE %s", (request.form['email']))
 
-        user = cursor.fetchone()
+            user = cursor.fetchone()
 
-        print(user)
+            if user:
+                if bcrypt.check_password_hash(user[3], request.form['password']):
+                    session['id'] = user[0]
+                    session['name'] = user[1]
 
-        if len(user) > 0:
-            if bcrypt.check_password_hash(user[3], request.form['password']):
-                session['id'] = user[0]
-                session['name'] = user[1]
-
-                return redirect(url_for("root.nucleo"))
+                    return redirect(url_for("root.nucleo"))
+    
+    return render_template('home/signin.html')
 
 
 @indexRoutes.route('/signout')

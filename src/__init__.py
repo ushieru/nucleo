@@ -27,6 +27,7 @@ from src.routes.admin.patients import patientsRoutes
 from src.routes.admin.medicines import medicinesRoutes
 from src.routes.admin.providers import providersRoutes
 from src.routes.admin.laboratories import laboratoriesRoutes
+from src.routes.hospital.appointments import appointmentsRoutes
 from src.routes.root import rootRoutes
 from src.routes.home.index import indexRoutes
 
@@ -38,3 +39,4 @@ app.register_blueprint(providersRoutes, url_prefix="/admin")
 app.register_blueprint(medicinesRoutes, url_prefix="/admin")
 app.register_blueprint(patientsRoutes, url_prefix="/admin")
 app.register_blueprint(reportsRoutes, url_prefix="/admin")
+app.register_blueprint(appointmentsRoutes, url_prefix="/hospital")
