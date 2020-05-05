@@ -16,7 +16,7 @@
                 Appointments
             </div>
             <div class="card-body mx-auto">
-                <button type="button" class="btn btn-block btn-primary">
+                <a href="{{ url_for('appointments.appointments') }}" class="btn btn-block btn-primary">
                     <i style="padding: .5em;" class="material-icons-round">today</i>
                     <p>
                         Today
@@ -28,7 +28,7 @@
                             {% endif %}
                         </span>
                     </p>
-                </button>
+                </a>
             </div>
         </div>
     </div>

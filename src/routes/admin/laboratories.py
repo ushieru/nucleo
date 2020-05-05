@@ -30,8 +30,8 @@ def laboratoriesAdd():
     cursor = mysql.get_db().cursor()
 
     cursor.execute("""
-        INSERT INTO `com_nucleo_medico_laboratorios` (`own`, `name`, `email`, `address`, `telephone`, `isDelete`) 
-        VALUES (%s, %s,  %s,  %s,  %s, 0)
+        INSERT INTO `com_nucleo_medico_laboratorios` (`own`, `name`, `email`, `address`, `telephone`) 
+        VALUES (%s, %s,  %s,  %s,  %s)
         """, (session['id'], request.form['name'], request.form['email'], request.form['address'], request.form['phone']))
 
     mysql.get_db().commit()

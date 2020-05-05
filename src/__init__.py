@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = "root"
 app.config['MYSQL_DATABASE_PASSWORD'] = ""
 app.config['MYSQL_DATABASE_DB'] = "nucleo"
-app.config['SECRET_KEY'] = "SecretKey"
+app.config['SECRET_KEY'] = "NucleoSecretKey"
 
 # MIDDLEWARES
 mysql = MySQL()

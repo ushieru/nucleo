@@ -2,22 +2,84 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from src.routes.warps.wraps import loginRequired
 from src import mysql
 
+import datetime
+
 appointmentsRoutes = Blueprint('appointments', __name__, )
 
 
-@appointmentsRoutes.route('/appointments')
+@appointmentsRoutes.route('/appointments', methods=['GET', 'POST'])
 @loginRequired
 def appointments():
     cursor = mysql.get_db().cursor()
 
+    try:
+        date = request.form['date']
+    except:
+        date = datetime.datetime.today()
+        date = date.strftime('%Y-%m-%d')
+
     cursor.execute("""
-        SELECT `com_nucleo_medico_citas`.`id`, `com_nucleo_medico_citas`.`own`, `com_nucleo_medico_pacientes`.`name`, `com_nucleo_medico_citas`.`hora`, `com_nucleo_medico_citas`.`descripcion`, `com_nucleo_medico_citas`.`delete`
+        SELECT `com_nucleo_medico_citas`.`id`, `com_nucleo_medico_citas`.`own`, `com_nucleo_medico_pacientes`.`name`, `com_nucleo_medico_citas`.`hora`, `com_nucleo_medico_citas`.`descripcion`, `com_nucleo_medico_citas`.`status`
         FROM `com_nucleo_medico_citas` 
         INNER JOIN `com_nucleo_medico_pacientes` 
         ON `com_nucleo_medico_citas`.`paciente` = `com_nucleo_medico_pacientes`.`id` 
-        WHERE `com_nucleo_medico_citas`.`fecha` = CURRENT_DATE
-        """)
+        WHERE `com_nucleo_medico_citas`.`fecha` = %s AND `com_nucleo_medico_citas`.`status` = 0 AND `com_nucleo_medico_citas`.`own` = %s
+        """, (date, session['id']))
 
     appointments = cursor.fetchall()
 
-    return render_template('app/modules/hospital/appointments.html', appointments=appointments)
+    cursor.execute("""
+        SELECT `com_nucleo_medico_pacientes`.`id`, `com_nucleo_medico_pacientes`.`name`
+        FROM `com_nucleo_medico_pacientes`
+        WHERE `com_nucleo_medico_pacientes`.`delete` = 0
+        """)
+
+    patients = cursor.fetchall()
+
+    return render_template('app/modules/hospital/appointments.html', appointments=appointments, date=date, patients=patients)
+
+
+@appointmentsRoutes.route('/appointments/add', methods=['POST'])
+@loginRequired
+def appointmentsAdd():
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        INSERT INTO `com_nucleo_medico_citas`(`own`, `paciente`, `fecha`, `hora`, `descripcion`) 
+        VALUES (%s, %s, %s, %s, %s)
+        """, (session['id'], request.form['patient'], request.form['date'], request.form['hour'], request.form['description']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('appointments.appointments'))
+
+
+@appointmentsRoutes.route('/appointments/check', methods=['POST'])
+@loginRequired
+def appointmentsCheck():
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        UPDATE `com_nucleo_medico_citas` 
+        SET `status`= 1 
+        WHERE `id`=  %s
+        """, (request.form['id']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('appointments.appointments'))
+
+@appointmentsRoutes.route('/appointments/cancel', methods=['POST'])
+@loginRequired
+def appointmentsCancel():
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        UPDATE `com_nucleo_medico_citas` 
+        SET `status`= 2 
+        WHERE `id`=  %s
+        """, (request.form['id']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('appointments.appointments'))

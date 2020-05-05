@@ -1,6 +1,6 @@
 {% extends "app/appMain.html" %}
 
-{% block title %}Patientes{% endblock %}
+{% block title %}Patients{% endblock %}
 
 {% block main %}
 <div class="card">
@@ -11,9 +11,6 @@
                     <input type="hidden" name="value" value="0">
                     <button type="submit" class="btn btn-primary btn-block">
                         <i class="material-icons-round align-middle">add_circle</i>
-                        <span class="align-middle">
-                            Add
-                        </span>
                     </button>
                 </form>
             </div>
@@ -45,9 +42,9 @@
                 {% for pat in pats %}
                 <tr>
                     <td>{{ pat[1] }}</td>
+                    <td>{{ pat[2] }}</td>
+                    <td>{{ pat[3] }}</td>
                     <td>{{ pat[4] }}</td>
-                    <td>{{ pat[10] }}</td>
-                    <td>{{ pat[14] }}</td>
                     <td class="row">
                         <div class="col-sm-6">
                             <form action="/admin/patients/gestor" method="POST">
@@ -59,7 +56,7 @@
                             </form>
                         </div>
                         <div class="col-sm-6">
-                            {% if pat[17] == '0' %}
+                            {% if pat[5] == 0 %}
                             <button type="submit" class="btn btn-danger btn-block" data-toggle="modal"
                                 title="Delete Patient" data-target="#modalToDelete{{ pat[0] }}">
                                 <i class="material-icons-round align-middle">delete</i>
