@@ -42,7 +42,7 @@
                         <td class="text-truncate" style="max-width: 10em;" title="{{ appo[4] }}">{{ appo[4] }}</td>
                         <td class="row">
                             <div class="col-sm-6">
-                                <form action="{{ url_for('appointments.appointmentsCheck') }}" method="POST">
+                                <form action="{{ url_for('prescriptions.prescriptions') }}" method="POST">
                                     <input type="hidden" name="id" value="{{ appo[0] }}">
                                     <button type="submit" class="btn btn-success btn-block" title="Check Appointment">
                                         <i class="material-icons-round align-middle">check_circle_outline</i>

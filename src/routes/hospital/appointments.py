@@ -4,7 +4,7 @@ from src import mysql
 
 import datetime
 
-appointmentsRoutes = Blueprint('appointments', __name__, )
+appointmentsRoutes = Blueprint('appointments', __name__)
 
 
 @appointmentsRoutes.route('/appointments', methods=['GET', 'POST'])

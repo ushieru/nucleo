@@ -27,16 +27,22 @@ from src.routes.admin.patients import patientsRoutes
 from src.routes.admin.medicines import medicinesRoutes
 from src.routes.admin.providers import providersRoutes
 from src.routes.admin.laboratories import laboratoriesRoutes
+
 from src.routes.hospital.appointments import appointmentsRoutes
+from src.routes.hospital.prescriptions import prescriptionsRoutes
+
 from src.routes.root import rootRoutes
 from src.routes.home.index import indexRoutes
 
 # REGISTER BLUEPRINTS
 app.register_blueprint(indexRoutes)
 app.register_blueprint(rootRoutes)
+
 app.register_blueprint(laboratoriesRoutes, url_prefix="/admin")
 app.register_blueprint(providersRoutes, url_prefix="/admin")
 app.register_blueprint(medicinesRoutes, url_prefix="/admin")
 app.register_blueprint(patientsRoutes, url_prefix="/admin")
 app.register_blueprint(reportsRoutes, url_prefix="/admin")
+
 app.register_blueprint(appointmentsRoutes, url_prefix="/hospital")
+app.register_blueprint(prescriptionsRoutes, url_prefix="/hospital")
