@@ -1,0 +1,211 @@
+{% extends "app/appMain.html" %}
+
+{% block title %}Employees{% endblock %}
+
+{% block main %}
+<div class="card">
+    <div class="card-header">
+        <form>
+            <div class="form-row">
+                <div class="col-1">
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                        data-target="#modalToAdd">
+                        <i class="material-icons-round align-middle">add_circle</i>
+                    </button>
+                </div>
+                <div class="col-10">
+                    <input type="text" class="form-control" placeholder="Search...">
+                </div>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-primary btn-block"> Search </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="max-height: 30em;" class="card-body overflow-auto">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lab in labs %}
+                <tr>
+                    <td>{{ lab[1] }}</td>
+                    <td>{{ lab[2] }}</td>
+                    <td>{{ lab[3] }}</td>
+                    <td>{{ lab[4] }}</td>
+                    <td class="row">
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-primary btn-block" title="Edit Laboratorie"
+                                data-toggle="modal" data-target="#modalToEdit{{ lab[0] }}">
+                                <i class="material-icons-round align-middle">edit</i>
+                            </button>
+                        </div>
+                        <div class="col-sm-6">
+                            {% if lab[5] == 0 %}
+                            <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
+                                title="Delete Laboratorie" data-target="#modalToDelete{{ lab[0] }}">
+                                <i class="material-icons-round align-middle">delete</i>
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-warning btn-block" data-toggle="modal"
+                                title="Restore Laboratorie" data-target="#modalToRestore{{ lab[0] }}">
+                                <i class="material-icons-round align-middle">restore_from_trash</i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# MODAL TO ADD #}
+<div class="modal fade" id="modalToAdd" tabindex="-1" role="dialog" aria-labelledby="Modal to Add" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Add Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('employees.employeeAdd') }}" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-Mail</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="number" class="form-control" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# MODAL TO DELETE OR RESTORE #}
+{% for lab in labs %}
+    {% if lab[5] == 0 %}
+        {{ deleteModal(lab[0], lab[1]) }}
+    {% else %}
+        {{ restoreModal(lab[0], lab[1]) }}
+    {% endif %}
+
+    {{ editModal(lab[0], lab[1], lab[2], lab[4], lab[3]) }}
+{% endfor %}
+
+{% endblock %}
+
+{# EDIT MODAL GENERATOR #}
+{% macro editModal(id, name, email, phone, address) -%}
+<div class="modal fade" id="modalToEdit{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Edit"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Edit Laboratorie</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/laboratories/edit" method="POST">
+                    <input type="hidden" value="{{ id }}" name="id">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-Mail</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ email }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="number" class="form-control" id="phone" name="phone" value="{{ phone }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="{{ address }}">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Edit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{# DELETE MODAL GENERATOR #}
+{% macro deleteModal(id, name) -%}
+<div class="modal fade" id="modalToDelete{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Delete"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Delete Laboratorie</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete {{ name }}?
+            </div>
+            <div class="modal-footer">
+                <form action="{{ url_for('laboratories.laboratoriesDelete') }}" method="POST">
+                    <input type="hidden" name="value" value="{{ id }}">
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{# RESTORE MODAL GENERATOR #}
+{% macro restoreModal(id, name) -%}
+<div class="modal fade" id="modalToRestore{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Restore"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Restore Laboratorie</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to restore {{ name }}?
+            </div>
+            <div class="modal-footer">
+                <form action="/admin/laboratories/restore" method="POST">
+                    <input type="hidden" name="value" value="{{ id }}">
+                    <button type="submit" class="btn btn-warning">
+                        Restore
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

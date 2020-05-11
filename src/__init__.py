@@ -33,22 +33,6 @@ mail = Mail(app)
 def page_not_found(e):
     return render_template('home/404.html'), 404
 
-@app.route('/testMail')
-def prescriptions():
-    msg = Message("Hello",
-                  sender="nucleo.medico.une@gmail.com",
-                  recipients=["uzielcocolan@gmail.com"])
-
-    msg.body = "Test Send Email Flask-Mail"
-
-    try:
-        mail.send(msg)
-    except Exception as identifier:
-        return str(identifier)
-
-    return "Email Send!"
-
-
 # ROUTES IMPORT
 from src.routes.home.index import indexRoutes
 from src.routes.root import rootRoutes
@@ -60,6 +44,7 @@ from src.routes.admin.providers import providersRoutes
 from src.routes.admin.medicines import medicinesRoutes
 from src.routes.admin.patients import patientsRoutes
 from src.routes.admin.reports import reportsRoutes
+from src.routes.admin.employees import employeesRoutes
 
 # REGISTER BLUEPRINTS
 app.register_blueprint(indexRoutes)
@@ -70,6 +55,7 @@ app.register_blueprint(providersRoutes, url_prefix="/admin")
 app.register_blueprint(medicinesRoutes, url_prefix="/admin")
 app.register_blueprint(patientsRoutes, url_prefix="/admin")
 app.register_blueprint(reportsRoutes, url_prefix="/admin")
+app.register_blueprint(employeesRoutes, url_prefix="/admin")
 
 app.register_blueprint(appointmentsRoutes, url_prefix="/hospital")
 app.register_blueprint(prescriptionsRoutes, url_prefix="/hospital")
