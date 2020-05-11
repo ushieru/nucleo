@@ -12,8 +12,8 @@ def patients():
 
     cursor.execute("""
         SELECT `com_nucleo_medico_pacientes`.`id`, `com_nucleo_medico_pacientes`.`name`, `com_nucleo_medico_pacientes`.`email`, `com_nucleo_medico_pacientes`.`domicilio`, `com_nucleo_medico_pacientes`.`celular`, `com_nucleo_medico_pacientes`.`delete` 
-        FROM `com_nucleo_medico_pacientes`
-        """)
+        FROM `com_nucleo_medico_pacientes` WHERE `com_nucleo_medico_pacientes`.`own` = %s
+        """, (session['id']))
 
     patients = cursor.fetchall()
 
@@ -113,5 +113,5 @@ def patientsRestore():
             """, (request.form['value']))
 
         mysql.get_db().commit()
-        
+
         return redirect(url_for("patients.patients"))

@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flaskext.mysql import MySQL
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 
@@ -9,30 +10,56 @@ app.config['MYSQL_DATABASE_USER'] = "root"
 app.config['MYSQL_DATABASE_PASSWORD'] = ""
 app.config['MYSQL_DATABASE_DB'] = "nucleo"
 app.config['SECRET_KEY'] = "NucleoSecretKey"
+# MAIL CONFIGURATION
+app.config.update(dict(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USE_SSL=False,
+    MAIL_USERNAME='nucleo.medico.une@gmail.com',
+    MAIL_PASSWORD='nucleoMedico123',
+    MAIL_DEFAULT_SENDER='nucleo.medico.une@gmail.com'
+))
+
 
 # MIDDLEWARES
 mysql = MySQL()
 mysql.init_app(app)
 bcrypt = Bcrypt(app)
+mail = Mail(app)
 
 # ROOT ROUTES
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('home/404.html'), 404
 
+@app.route('/testMail')
+def prescriptions():
+    msg = Message("Hello",
+                  sender="nucleo.medico.une@gmail.com",
+                  recipients=["uzielcocolan@gmail.com"])
+
+    msg.body = "Test Send Email Flask-Mail"
+
+    try:
+        mail.send(msg)
+    except Exception as identifier:
+        return str(identifier)
+
+    return "Email Send!"
+
 
 # ROUTES IMPORT
-from src.routes.admin.reports import reportsRoutes
-from src.routes.admin.patients import patientsRoutes
-from src.routes.admin.medicines import medicinesRoutes
-from src.routes.admin.providers import providersRoutes
-from src.routes.admin.laboratories import laboratoriesRoutes
-
-from src.routes.hospital.appointments import appointmentsRoutes
-from src.routes.hospital.prescriptions import prescriptionsRoutes
-
-from src.routes.root import rootRoutes
 from src.routes.home.index import indexRoutes
+from src.routes.root import rootRoutes
+from src.routes.hospital.files import filesRoutes
+from src.routes.hospital.prescriptions import prescriptionsRoutes
+from src.routes.hospital.appointments import appointmentsRoutes
+from src.routes.admin.laboratories import laboratoriesRoutes
+from src.routes.admin.providers import providersRoutes
+from src.routes.admin.medicines import medicinesRoutes
+from src.routes.admin.patients import patientsRoutes
+from src.routes.admin.reports import reportsRoutes
 
 # REGISTER BLUEPRINTS
 app.register_blueprint(indexRoutes)
@@ -46,3 +73,4 @@ app.register_blueprint(reportsRoutes, url_prefix="/admin")
 
 app.register_blueprint(appointmentsRoutes, url_prefix="/hospital")
 app.register_blueprint(prescriptionsRoutes, url_prefix="/hospital")
+app.register_blueprint(filesRoutes, url_prefix="/hospital")

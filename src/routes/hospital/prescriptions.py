@@ -55,4 +55,12 @@ def prescriptionsAdd():
 
         mysql.get_db().commit()
 
+        cursor.execute("""
+            INSERT INTO `com_nucleo_medico_highlights`(`id_paciente`, `highlight`) 
+            VALUES (%s, %s)
+            """, (request.form['id'], request.form['highlight']))
+
+        mysql.get_db().commit()
+
+
     return redirect(url_for('appointments.appointments'))
