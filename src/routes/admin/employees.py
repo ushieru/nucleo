@@ -11,8 +11,17 @@ employeesRoutes = Blueprint('employees', __name__)
 @employeesRoutes.route('/employees')
 @loginRequired
 def employees():
+    cursor = mysql.get_db().cursor()
 
-    return render_template('app/modules/admin/employees.html')
+    cursor.execute("""
+        SELECT `id`, `nombre`, `correo`, `telefono`, `status`
+        FROM `com_nucleo_medico_empleados` 
+        WHERE `id_own` = %s
+        """, (session['id']))
+
+    employees = cursor.fetchall()
+
+    return render_template('app/modules/admin/employees.html', employees=employees)
 
 
 @employeesRoutes.route('/employeeAdd', methods=['GET', 'POST'])
@@ -33,3 +42,50 @@ def employeeAdd():
     mysql.get_db().commit()
 
     return redirect(url_for('root.sendMail', name=request.form['name'], email=request.form['email'], password=passwordAux))
+
+
+@employeesRoutes.route('/employeeEdit', methods=['GET', 'POST'])
+@loginRequired
+def employeeEdit():
+    
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        UPDATE `com_nucleo_medico_empleados` 
+        SET `nombre`=%s,`correo`=%s,`telefono`=%s 
+        WHERE `id`=%s
+        """, (request.form['name'], request.form['email'], request.form['phone'], request.form['value']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('employees.employees'))
+
+
+@employeesRoutes.route('/employeeRestore', methods=['GET', 'POST'])
+@loginRequired
+def employeeRestore():
+
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        UPDATE `com_nucleo_medico_empleados` SET `status`= 0 WHERE `id` = %s
+        """, (request.form['value']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('employees.employees'))
+
+
+@employeesRoutes.route('/employeeDelete', methods=['GET', 'POST'])
+@loginRequired
+def employeeDelete():
+
+    cursor = mysql.get_db().cursor()
+
+    cursor.execute("""
+        UPDATE `com_nucleo_medico_empleados` SET `status`= 1 WHERE `id` = %s
+        """, (request.form['value']))
+
+    mysql.get_db().commit()
+
+    return redirect(url_for('employees.employees'))

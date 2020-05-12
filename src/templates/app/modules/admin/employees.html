@@ -33,28 +33,27 @@
                 </tr>
             </thead>
             <tbody>
-                {% for lab in labs %}
+                {% for employee in employees %}
                 <tr>
-                    <td>{{ lab[1] }}</td>
-                    <td>{{ lab[2] }}</td>
-                    <td>{{ lab[3] }}</td>
-                    <td>{{ lab[4] }}</td>
+                    <td>{{ employee[1] }}</td>
+                    <td>{{ employee[2] }}</td>
+                    <td>{{ employee[3] }}</td>
                     <td class="row">
                         <div class="col-sm-6">
                             <button type="button" class="btn btn-primary btn-block" title="Edit Laboratorie"
-                                data-toggle="modal" data-target="#modalToEdit{{ lab[0] }}">
+                                data-toggle="modal" data-target="#modalToEdit{{ employee[0] }}">
                                 <i class="material-icons-round align-middle">edit</i>
                             </button>
                         </div>
                         <div class="col-sm-6">
-                            {% if lab[5] == 0 %}
+                            {% if employee[4] == 0 %}
                             <button type="button" class="btn btn-danger btn-block" data-toggle="modal"
-                                title="Delete Laboratorie" data-target="#modalToDelete{{ lab[0] }}">
+                                title="Delete employee" data-target="#modalToDelete{{ employee[0] }}">
                                 <i class="material-icons-round align-middle">delete</i>
                             </button>
                             {% else %}
                             <button type="button" class="btn btn-warning btn-block" data-toggle="modal"
-                                title="Restore Laboratorie" data-target="#modalToRestore{{ lab[0] }}">
+                                title="Restore employee" data-target="#modalToRestore{{ employee[0] }}">
                                 <i class="material-icons-round align-middle">restore_from_trash</i>
                             </button>
                             {% endif %}
@@ -101,33 +100,33 @@
 </div>
 
 {# MODAL TO DELETE OR RESTORE #}
-{% for lab in labs %}
-    {% if lab[5] == 0 %}
-        {{ deleteModal(lab[0], lab[1]) }}
+{% for employee in employees %}
+    {% if employee[4] == 0 %}
+        {{ deleteModal(employee[0], employee[1]) }}
     {% else %}
-        {{ restoreModal(lab[0], lab[1]) }}
+        {{ restoreModal(employee[0], employee[1]) }}
     {% endif %}
 
-    {{ editModal(lab[0], lab[1], lab[2], lab[4], lab[3]) }}
+    {{ editModal(employee[0], employee[1], employee[2], employee[3]) }}
 {% endfor %}
 
 {% endblock %}
 
 {# EDIT MODAL GENERATOR #}
-{% macro editModal(id, name, email, phone, address) -%}
+{% macro editModal(id, name, email, phone) -%}
 <div class="modal fade" id="modalToEdit{{ id }}" tabindex="-1" role="dialog" aria-labelledby="Modal to Edit"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Edit Laboratorie</h5>
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Edit Employee</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/admin/laboratories/edit" method="POST">
-                    <input type="hidden" value="{{ id }}" name="id">
+                <form action="{{ url_for('employees.employeeEdit') }}" method="POST">
+                    <input type="hidden" value="{{ id }}" name="value">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
@@ -139,10 +138,6 @@
                     <div class="form-group">
                         <label for="phone">Phone</label>
                         <input type="number" class="form-control" id="phone" name="phone" value="{{ phone }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" value="{{ address }}">
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block">Edit</button>
@@ -161,7 +156,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Delete Laboratorie</h5>
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Delete Employee</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -170,7 +165,7 @@
                 Are you sure to delete {{ name }}?
             </div>
             <div class="modal-footer">
-                <form action="{{ url_for('laboratories.laboratoriesDelete') }}" method="POST">
+                <form action="{{ url_for('employees.employeeDelete') }}" method="POST">
                     <input type="hidden" name="value" value="{{ id }}">
                     <button type="submit" class="btn btn-danger">
                         Delete
@@ -189,7 +184,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Restore Laboratorie</h5>
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Restore Employee</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -198,7 +193,7 @@
                 Are you sure to restore {{ name }}?
             </div>
             <div class="modal-footer">
-                <form action="/admin/laboratories/restore" method="POST">
+                <form action="{{ url_for('employees.employeeRestore') }}" method="POST">
                     <input type="hidden" name="value" value="{{ id }}">
                     <button type="submit" class="btn btn-warning">
                         Restore

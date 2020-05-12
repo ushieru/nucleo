@@ -81,7 +81,7 @@ def sendMail(name, email, password):
                         </tr>
                         <tr>
                             <td style="color: #757575; padding: 0 10px;">
-                                <p>Se te a invitado a colaborar con el doctor $doctor, en su farmacia.</p>
+                                <p>Se te a invitado a colaborar con el doctor """ + session['name'] + """, en su farmacia.</p>
                                 <p>Tu usuario es tu correo electronico. Su contrase&ntilde;a sera provisional solo para su primer ingreso, no la comparta con nadie, en ningun momento.</p>
                                 <p style="color: #01579b; padding-left: 15px;">""" + password + """</p>
                             </td>
