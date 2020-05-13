@@ -1,3 +1,6 @@
+{% extends "./main.html" %}
+
+{% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow" style="margin-bottom: 15px">
     <a class="navbar-brand" href="/">Nucleo Medico</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -5,14 +8,6 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-            </li>
-        </ul>
     </div>
     <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
@@ -20,23 +15,15 @@
             <li class="nav-item">
                 <a class="nav-link disabled text-white" tabindex="-1" aria-disabled="true">{{ session['name'] }}</a>
             </li>
-            {% if session['isDoctor']  %}
-            <li class="nav-item">
-                <a class="nav-link" href="/nucleo">Nucleo</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('farmacia.farmacia') }}">Farmacia</a>
-            </li>
             {% endif %}
-            {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="/signin">Sign In</a>
+                <a class="nav-link" href="/signout">Sign Out</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/signup">Sign Up</a>
-            </li>
-            {% endif %}
         </ul>
     </div>
 </nav>
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}

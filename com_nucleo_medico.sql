@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.2
+-- version 5.0.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 12-03-2020 a las 18:57:14
--- Versión del servidor: 10.1.34-MariaDB
--- Versión de PHP: 7.2.8
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 13-05-2020 a las 17:10:28
+-- Versión del servidor: 10.4.11-MariaDB
+-- Versión de PHP: 7.4.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `com_nucleo_medico`
+-- Base de datos: `nucleo`
 --
 
 -- --------------------------------------------------------
@@ -35,17 +35,37 @@ CREATE TABLE `com_nucleo_medico_citas` (
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
   `descripcion` varchar(200) NOT NULL,
-  `delete` int(11) NOT NULL
+  `status` int(11) NOT NULL DEFAULT 0 COMMENT '0 = Por atender;\r\n1 = Atendido;\r\n2 = Cancelada;'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
 --
--- Volcado de datos para la tabla `com_nucleo_medico_citas`
+-- Estructura de tabla para la tabla `com_nucleo_medico_empleados`
 --
 
-INSERT INTO `com_nucleo_medico_citas` (`id`, `own`, `paciente`, `fecha`, `hora`, `descripcion`, `delete`) VALUES
-(1, 3, 1, '2019-11-28', '14:30:00', 'Medicina General', 0),
-(2, 3, 1, '2019-11-27', '11:00:00', 'Medicina General', 0),
-(3, 4, 1, '2019-12-03', '11:00:00', 'medicina general', 0);
+CREATE TABLE `com_nucleo_medico_empleados` (
+  `id` int(11) NOT NULL,
+  `id_own` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `correo` varchar(100) NOT NULL,
+  `telefono` varchar(12) NOT NULL,
+  `password` varchar(300) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `change_password` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `com_nucleo_medico_highlights`
+--
+
+CREATE TABLE `com_nucleo_medico_highlights` (
+  `id` int(11) NOT NULL,
+  `id_paciente` int(11) NOT NULL,
+  `highlight` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -60,22 +80,8 @@ CREATE TABLE `com_nucleo_medico_laboratorios` (
   `email` varchar(100) NOT NULL,
   `address` varchar(100) NOT NULL,
   `telephone` varchar(15) NOT NULL,
-  `isDelete` int(1) NOT NULL
+  `isDelete` int(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Volcado de datos para la tabla `com_nucleo_medico_laboratorios`
---
-
-INSERT INTO `com_nucleo_medico_laboratorios` (`id`, `own`, `name`, `email`, `address`, `telephone`, `isDelete`) VALUES
-(1, 3, 'labTest 1', 'test@gmail.com', 'address #1234', '0123456789', 0),
-(2, 3, 'labTest 2', 'test2@gmail.com', 'address #1234', '0123456789', 0),
-(3, 3, 'labTest 3', 'test3@gmail.com', 'address #1234', '0123456789', 0),
-(4, 3, 'labTest 4', 'qweqwe@gmail.com', 'address #1234', '1231231231', 0),
-(5, 3, 'labTest 5', 'test5@gmail.com', 'address # 1234', '1231231321', 1),
-(9, 3, 'abcLab', 'abcLab@gmail.com', 'abcLab # 4231', '1231231231', 1),
-(11, 3, 'asdasd', 'asdasd', 'asdasd', '456456', 1),
-(12, 3, 'labtest05', 'test5@gmail.com', 'flores2345', '3334483993', 0);
 
 -- --------------------------------------------------------
 
@@ -94,16 +100,38 @@ CREATE TABLE `com_nucleo_medico_medicamentos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Volcado de datos para la tabla `com_nucleo_medico_medicamentos`
+-- Disparadores `com_nucleo_medico_medicamentos`
+--
+DELIMITER $$
+CREATE TRIGGER `init_stock_AI` AFTER INSERT ON `com_nucleo_medico_medicamentos` FOR EACH ROW INSERT INTO `com_nucleo_medico_medicamentos_stock`(`id`, `cantidad`) VALUES (NEW.id, 0)
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `com_nucleo_medico_medicamentos_movements`
 --
 
-INSERT INTO `com_nucleo_medico_medicamentos` (`id`, `own`, `name`, `expiration`, `laboratory`, `provider`, `delete`) VALUES
-(1, 3, 'Paracetamol', '2022-07-01', 1, 1, 0),
-(2, 3, 'Amoxicilina', '2022-11-01', 2, 3, 0),
-(3, 3, 'Ambroxol', '2021-01-01', 1, 1, 0),
-(4, 3, 'Betametasona', '2021-01-01', 5, 2, 0),
-(5, 3, 'Aspirina', '2024-07-10', 12, 2, 0),
-(6, 3, 'ampicilina', '2028-02-24', 2, 10, 0);
+CREATE TABLE `com_nucleo_medico_medicamentos_movements` (
+  `id` int(11) NOT NULL,
+  `id_medicamento` int(11) NOT NULL,
+  `id_empleado` int(11) NOT NULL,
+  `io` tinyint(1) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `com_nucleo_medico_medicamentos_stock`
+--
+
+CREATE TABLE `com_nucleo_medico_medicamentos_stock` (
+  `id` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -127,21 +155,11 @@ CREATE TABLE `com_nucleo_medico_pacientes` (
   `colonia` varchar(100) NOT NULL,
   `estado` varchar(100) NOT NULL,
   `municipio` varchar(100) NOT NULL,
-  `delegacion` varchar(100) NOT NULL,
   `celular` varchar(15) NOT NULL,
   `tel_casa` varchar(15) NOT NULL,
   `tel_oficina` varchar(15) NOT NULL,
-  `delete` int(1) NOT NULL
+  `delete` int(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Volcado de datos para la tabla `com_nucleo_medico_pacientes`
---
-
-INSERT INTO `com_nucleo_medico_pacientes` (`id`, `own`, `name`, `birthday`, `sexo`, `email`, `ocupacion`, `escolaridad`, `curp`, `poliza`, `estado_civil`, `domicilio`, `colonia`, `estado`, `municipio`, `delegacion`, `celular`, `tel_casa`, `tel_oficina`, `delete`) VALUES
-(1, 3, 'Uziel Atlai Cocolan Flores', '1997-12-29', 0, 'uzielcocolan@gmail.com', 'Estudiante', 'Superior', 'COFU971229HJCCLZ09', '159786324', 'Soltero', 'Address # 123', 'Colonia', 'Jalisco', 'Guadalajara', '', '1231231231', '15915915', '26526526', 0),
-(2, 3, 'rty', '2019-11-01', 0, 'iop', 'iop', 'iop', 'iop', 'iop', 'iop', 'qwe', 'qwe', 'qwe', 'qwe', 'qwe', '123', '123', '3123', 1),
-(3, 3, 'pacientedemo', '2020-02-02', 0, 'demo@gmail.com', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', '12312413412', '123123123', '123123123123', 0);
 
 -- --------------------------------------------------------
 
@@ -159,17 +177,19 @@ CREATE TABLE `com_nucleo_medico_proveedores` (
   `isDelete` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
 --
--- Volcado de datos para la tabla `com_nucleo_medico_proveedores`
+-- Estructura de tabla para la tabla `com_nucleo_medico_recetas`
 --
 
-INSERT INTO `com_nucleo_medico_proveedores` (`id`, `own`, `name`, `email`, `address`, `telephone`, `isDelete`) VALUES
-(1, 3, 'provTest 1', 'email@email.com', 'address # 123', '0000000000', 1),
-(2, 3, 'provTest 2', 'email@email.com', 'address # 123', '0000000000', 0),
-(3, 3, 'provTest 3', 'email@email.com', 'address # 123', '0000000000', 0),
-(6, 3, 'adasd', 'asdasd', 'asdasd', '789876', 1),
-(9, 3, 'provtest', 'testprov@gmail.com', 'prueba 3423', '3334483993', 0),
-(10, 3, 'testprov6', 'pruebaprov@gmail.com', 'test 2345', '23345678', 0);
+CREATE TABLE `com_nucleo_medico_recetas` (
+  `id` int(11) NOT NULL,
+  `id_own` int(11) NOT NULL,
+  `id_paciente` int(11) NOT NULL,
+  `prescripcion` text NOT NULL,
+  `fecha` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -181,16 +201,8 @@ CREATE TABLE `com_nucleo_medico_user` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(200) NOT NULL
+  `password` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Volcado de datos para la tabla `com_nucleo_medico_user`
---
-
-INSERT INTO `com_nucleo_medico_user` (`id`, `name`, `email`, `password`) VALUES
-(3, 'Uziel Atlai Cocolan Flores', 'uzielcocolan@gmail.com', 'ffc2dfb436c72e7a9484b4120a93bc318579c61c1d86c88aed4da1b6ff5467a36cd7b0fe691f274b42a56daed902f6d09e1a6b3f8d25cf74ec05a54b6541167b'),
-(4, 'Miguel', 'miguel.gonzalez.carlos97@gmail.com', 'd783573b3bd699d612611b93d1ae4db54373bd3333c2d0ec6867c31a75535a61ac4c336fb0b2d08692fc31d7af0180bfb6bd56be52d9048ff0a0f05ecf9e9035');
 
 --
 -- Índices para tablas volcadas
@@ -203,6 +215,19 @@ ALTER TABLE `com_nucleo_medico_citas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `Medico-Citas` (`own`),
   ADD KEY `Paciente-Citas` (`paciente`);
+
+--
+-- Indices de la tabla `com_nucleo_medico_empleados`
+--
+ALTER TABLE `com_nucleo_medico_empleados`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_own` (`id_own`);
+
+--
+-- Indices de la tabla `com_nucleo_medico_highlights`
+--
+ALTER TABLE `com_nucleo_medico_highlights`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `com_nucleo_medico_laboratorios`
@@ -221,6 +246,18 @@ ALTER TABLE `com_nucleo_medico_medicamentos`
   ADD KEY `Proveedor-Medicamentos` (`provider`);
 
 --
+-- Indices de la tabla `com_nucleo_medico_medicamentos_movements`
+--
+ALTER TABLE `com_nucleo_medico_medicamentos_movements`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `com_nucleo_medico_medicamentos_stock`
+--
+ALTER TABLE `com_nucleo_medico_medicamentos_stock`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `com_nucleo_medico_pacientes`
 --
 ALTER TABLE `com_nucleo_medico_pacientes`
@@ -235,10 +272,19 @@ ALTER TABLE `com_nucleo_medico_proveedores`
   ADD KEY `Medico-Proveedores` (`own`);
 
 --
+-- Indices de la tabla `com_nucleo_medico_recetas`
+--
+ALTER TABLE `com_nucleo_medico_recetas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_own` (`id_own`),
+  ADD KEY `id_paciente` (`id_paciente`);
+
+--
 -- Indices de la tabla `com_nucleo_medico_user`
 --
 ALTER TABLE `com_nucleo_medico_user`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -248,37 +294,61 @@ ALTER TABLE `com_nucleo_medico_user`
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_citas`
 --
 ALTER TABLE `com_nucleo_medico_citas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `com_nucleo_medico_empleados`
+--
+ALTER TABLE `com_nucleo_medico_empleados`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `com_nucleo_medico_highlights`
+--
+ALTER TABLE `com_nucleo_medico_highlights`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_laboratorios`
 --
 ALTER TABLE `com_nucleo_medico_laboratorios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_medicamentos`
 --
 ALTER TABLE `com_nucleo_medico_medicamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `com_nucleo_medico_medicamentos_movements`
+--
+ALTER TABLE `com_nucleo_medico_medicamentos_movements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_pacientes`
 --
 ALTER TABLE `com_nucleo_medico_pacientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_proveedores`
 --
 ALTER TABLE `com_nucleo_medico_proveedores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `com_nucleo_medico_recetas`
+--
+ALTER TABLE `com_nucleo_medico_recetas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `com_nucleo_medico_user`
 --
 ALTER TABLE `com_nucleo_medico_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
@@ -290,6 +360,12 @@ ALTER TABLE `com_nucleo_medico_user`
 ALTER TABLE `com_nucleo_medico_citas`
   ADD CONSTRAINT `Medico-Citas` FOREIGN KEY (`own`) REFERENCES `com_nucleo_medico_user` (`id`),
   ADD CONSTRAINT `Paciente-Citas` FOREIGN KEY (`paciente`) REFERENCES `com_nucleo_medico_pacientes` (`id`);
+
+--
+-- Filtros para la tabla `com_nucleo_medico_empleados`
+--
+ALTER TABLE `com_nucleo_medico_empleados`
+  ADD CONSTRAINT `com_nucleo_medico_empleados_ibfk_1` FOREIGN KEY (`id_own`) REFERENCES `com_nucleo_medico_user` (`id`);
 
 --
 -- Filtros para la tabla `com_nucleo_medico_laboratorios`
@@ -306,6 +382,12 @@ ALTER TABLE `com_nucleo_medico_medicamentos`
   ADD CONSTRAINT `Proveedor-Medicamentos` FOREIGN KEY (`provider`) REFERENCES `com_nucleo_medico_proveedores` (`id`);
 
 --
+-- Filtros para la tabla `com_nucleo_medico_medicamentos_stock`
+--
+ALTER TABLE `com_nucleo_medico_medicamentos_stock`
+  ADD CONSTRAINT `com_nucleo_medico_medicamentos_stock_ibfk_1` FOREIGN KEY (`id`) REFERENCES `com_nucleo_medico_medicamentos` (`id`);
+
+--
 -- Filtros para la tabla `com_nucleo_medico_pacientes`
 --
 ALTER TABLE `com_nucleo_medico_pacientes`
@@ -316,6 +398,13 @@ ALTER TABLE `com_nucleo_medico_pacientes`
 --
 ALTER TABLE `com_nucleo_medico_proveedores`
   ADD CONSTRAINT `Medico-Proveedores` FOREIGN KEY (`own`) REFERENCES `com_nucleo_medico_user` (`id`);
+
+--
+-- Filtros para la tabla `com_nucleo_medico_recetas`
+--
+ALTER TABLE `com_nucleo_medico_recetas`
+  ADD CONSTRAINT `com_nucleo_medico_recetas_ibfk_1` FOREIGN KEY (`id_own`) REFERENCES `com_nucleo_medico_user` (`id`),
+  ADD CONSTRAINT `com_nucleo_medico_recetas_ibfk_2` FOREIGN KEY (`id_paciente`) REFERENCES `com_nucleo_medico_pacientes` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from src.routes.warps.wraps import loginRequired
+from src.routes.warps.wraps import loginRequired, isDoctor
 from src import mysql, mail, Message
 
 import datetime
@@ -9,24 +9,28 @@ rootRoutes = Blueprint('root', __name__)
 
 @rootRoutes.route('/admin')
 @loginRequired
+@isDoctor
 def admin():
     return render_template('app/admin.html')
 
 
 @rootRoutes.route('/hospital')
 @loginRequired
+@isDoctor
 def hospital():
     return render_template('app/hospital.html')
 
 
 @rootRoutes.route('/settings')
 @loginRequired
+@isDoctor
 def settings():
     return render_template('app/settings.html')
 
 
 @rootRoutes.route('/nucleo')
 @loginRequired
+@isDoctor
 def nucleo():
     cursor = mysql.get_db().cursor()
 
@@ -51,7 +55,7 @@ def nucleo():
 @loginRequired
 def sendMail(name, email, password):
     if email and password:
-        msg = Message("Hello",
+        msg = Message("Nucleo Medico",
                       recipients=[email])
 
         msg.html = """

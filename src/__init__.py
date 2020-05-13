@@ -36,6 +36,7 @@ def page_not_found(e):
 # ROUTES IMPORT
 from src.routes.home.index import indexRoutes
 from src.routes.root import rootRoutes
+from src.routes.farmacia.farmacia import farmaciaRoutes
 from src.routes.hospital.files import filesRoutes
 from src.routes.hospital.prescriptions import prescriptionsRoutes
 from src.routes.hospital.appointments import appointmentsRoutes
@@ -56,6 +57,8 @@ app.register_blueprint(medicinesRoutes, url_prefix="/admin")
 app.register_blueprint(patientsRoutes, url_prefix="/admin")
 app.register_blueprint(reportsRoutes, url_prefix="/admin")
 app.register_blueprint(employeesRoutes, url_prefix="/admin")
+
+app.register_blueprint(farmaciaRoutes, url_prefix="/farmacia")
 
 app.register_blueprint(appointmentsRoutes, url_prefix="/hospital")
 app.register_blueprint(prescriptionsRoutes, url_prefix="/hospital")
