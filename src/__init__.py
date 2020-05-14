@@ -8,7 +8,7 @@ app = Flask(__name__)
 # CONFIGURATION
 app.config['MYSQL_DATABASE_USER'] = "root"
 app.config['MYSQL_DATABASE_PASSWORD'] = ""
-app.config['MYSQL_DATABASE_DB'] = "nucleo"
+app.config['MYSQL_DATABASE_DB'] = "nucleo_deploy"
 app.config['SECRET_KEY'] = "NucleoSecretKey"
 # MAIL CONFIGURATION
 app.config.update(dict(
