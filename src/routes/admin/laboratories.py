@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from src.routes.warps.wraps import loginRequired, onlyPOST
 from src import mysql
 
@@ -27,12 +27,29 @@ def laboratories():
 @onlyPOST
 @loginRequired
 def laboratoriesAdd():
+
+    name = request.form['name']
+    email = request.form['email']
+    address = request.form['address']
+    phone = request.form['phone']
+
+    if name == '' or email == '' or address == '' or phone == '':
+        flash(u'Empty fields are not allowed', 'Error')
+        return redirect(url_for("laboratories.laboratories"))
+
+    try: 
+        email.index('@')
+        email.index('.')
+    except:
+        flash(u'Invalid email', 'Error')
+        return redirect(url_for("laboratories.laboratories"))
+
     cursor = mysql.get_db().cursor()
 
     cursor.execute("""
         INSERT INTO `com_nucleo_medico_laboratorios` (`own`, `name`, `email`, `address`, `telephone`) 
         VALUES (%s, %s,  %s,  %s,  %s)
-        """, (session['id'], request.form['name'], request.form['email'], request.form['address'], request.form['phone']))
+        """, (session['id'], name, email, address, phone))
 
     mysql.get_db().commit()
 
@@ -43,11 +60,29 @@ def laboratoriesAdd():
 @onlyPOST
 @loginRequired
 def laboratoriesEdit():
+
+    name = request.form['name']
+    email = request.form['email']
+    address = request.form['address']
+    phone = request.form['phone']
+    id = request.form['id']
+
+    if name == '' or email == '' or address == '' or phone == '' or id == '':
+        flash(u'Empty fields are not allowed', 'Error')
+        return redirect(url_for("laboratories.laboratories"))
+    
+    try: 
+        email.index('@')
+        email.index('.')
+    except:
+        flash(u'invalid email', 'Error')
+        return redirect(url_for("laboratories.laboratories"))
+
     cursor = mysql.get_db().cursor()
 
     cursor.execute("""UPDATE `com_nucleo_medico_laboratorios` SET `name`=%s,`email`=%s,`address`=%s,`telephone`=%s 
                     WHERE `id` = %s""",
-                   (request.form['name'], request.form['email'], request.form['address'], request.form['phone'], request.form['id']))
+                   (name, email, address, phone, id))
 
     mysql.get_db().commit()
 

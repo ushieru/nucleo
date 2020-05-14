@@ -8,7 +8,7 @@ def loginRequired(f):
         if session.get('name'):
             pass
         else:
-            flash(u'You need sign in', 'Error')
+            flash(u'You need sign in first', 'Error')
             return redirect(url_for("index.home"))
         return f(*args, **kwargs)
     return decorated_function

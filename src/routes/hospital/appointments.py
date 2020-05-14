@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from src.routes.warps.wraps import loginRequired
 from src import mysql
 
@@ -42,7 +42,27 @@ def appointments():
 @appointmentsRoutes.route('/appointments/add', methods=['POST'])
 @loginRequired
 def appointmentsAdd():
+
+    if datetime.date(int(request.form['date'].split('-')[0]), int(request.form['date'].split('-')[1]), int(request.form['date'].split('-')[2])) < datetime.date.today():
+        flash("You can't schedule an appointment with a date before today", 'Error')
+        return redirect(url_for("appointments.appointments"))
+
+    if datetime.datetime.now().hour > int(request.form['hour'][:2]):
+        flash("You can't make an appointment with an hour past", 'Error')
+        return redirect(url_for("appointments.appointments"))
+
+    if datetime.datetime.now().minute > int(request.form['hour'][3:5]):
+        flash("You can't make an appointment with an hour past", 'Error')
+        return redirect(url_for("appointments.appointments"))
+
     cursor = mysql.get_db().cursor()
+
+    cursor.execute("""SELECT `hora` FROM `com_nucleo_medico_citas` WHERE `fecha` = %s AND `own` = %s AND `status` = 0
+    """, (request.form['date'], session['id']))
+
+    if str(cursor.fetchone()[0])[:3] == request.form['hour'][:3]:
+        flash("You can't register an appointment with an already scheduled time", 'Error')
+        return redirect(url_for("appointments.appointments"))
 
     cursor.execute("""
         INSERT INTO `com_nucleo_medico_citas`(`own`, `paciente`, `fecha`, `hora`, `descripcion`) 
@@ -68,6 +88,7 @@ def appointmentsCheck():
     mysql.get_db().commit()
 
     return redirect(url_for('appointments.appointments'))
+
 
 @appointmentsRoutes.route('/appointments/cancel', methods=['POST'])
 @loginRequired

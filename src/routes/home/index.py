@@ -22,6 +22,17 @@ def signup():
         email = request.form['email']
         password = request.form['password']
 
+        if name == '' or email == '' or password == '':
+            flash(u'Empty fields are not allowed', 'Error')
+            return redirect(url_for("index.signup"))
+
+        try: 
+            email.index('@')
+            email.index('.')
+        except:
+            flash(u'invalid email', 'Error')
+            return redirect(url_for("index.signup"))
+
         password = bcrypt.generate_password_hash(password)
 
         cursor = mysql.get_db().cursor()
@@ -43,7 +54,7 @@ def signin():
         cursor = mysql.get_db().cursor()
         try:
             if session['id']:
-                flash(u'Ya tiene una sesion activa', 'Error')
+                flash(u'You already have an active session', 'Error')
                 return redirect(url_for("index.home"))
         except:
             pass
@@ -59,8 +70,11 @@ def signin():
                     session['id'] = user[0]
                     session['name'] = user[1]
                     session['isDoctor'] = True
-
                     return redirect(url_for("root.nucleo"))
+                
+                flash(u'User or password error', 'Error')
+                return redirect(url_for("index.signin"))
+
             else:
                 cursor.execute(
                     "SELECT `id`, `nombre`, `password`, `change_password`, `id_own` FROM `com_nucleo_medico_empleados` WHERE `com_nucleo_medico_empleados`.`correo` LIKE %s", (request.form['email']))
@@ -77,6 +91,13 @@ def signin():
                             return redirect(url_for("index.changePassword"))
                         return redirect(url_for("index.home"))
 
+                flash(u'User or password error', 'Error')
+                return redirect(url_for("index.signin"))
+        else:
+            flash(u'Empty fields are not allowed', 'Error')
+            return redirect(url_for("index.signin"))
+
+
 
 @indexRoutes.route('/changePassword', methods=['GET', 'POST'])
 @loginRequired
@@ -89,7 +110,7 @@ def changePassword():
     confirmPassword = request.form['confirmPassword']
 
     if password == '' or confirmPassword == '':
-        flash("Empty fields", 'Error')
+        flash("Empty fields are not alloweds", 'Error')
         return redirect(url_for("index.changePassword"))
 
     if confirmPassword != password:
@@ -114,3 +135,7 @@ def signout():
     session.clear()
     gc.collect()
     return redirect(url_for("index.home"))
+
+@indexRoutes.route('/about')
+def about():
+    return render_template('home/about.html')
