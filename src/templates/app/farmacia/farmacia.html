@@ -26,4 +26,92 @@
 
 {% block content %}
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header font-weight-bolder d-flex justify-content-between">
+                    Supplies
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalToAdd">
+                        <i class="material-icons-round align-middle">add_circle</i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        {% for medicine in medicines %}
+                        {% if medicine[3] != 0 %}
+                        <div class="col-2 my-2">
+                            <button type="button" class="btn btn-block btn-primary myTooltipTooglebutton"
+                                data-toggle="tooltip" data-placement="right" title="{{ medicine[2] }}">
+                                <i style="padding: 10px;" class="material-icons-round">local_hospital</i>
+                                <p class="text-truncate">
+                                    {{ medicine[1] }}
+                                </p>
+                            </button>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header font-weight-bolder">
+                    Medicamentos
+                </div>
+                <div class="card-body">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{# MODAL TO ADD #}
+<div class="modal fade" id="modalToAdd" tabindex="-1" role="dialog" aria-labelledby="Modal to Add" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bolder" id="exampleModalCenterTitle">Add Medicine</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('farmacia.addToStock') }}" method="POST">
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Medicines</label>
+                        <select class="form-control" id="exampleFormControlSelect1" name="idMedicine">
+                            {% for medicine in medicines %}
+                            <option value="{{ medicine[0] }}">{{ medicine[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Quantity</label>
+                        <input type="number" class="form-control" id="exampleFormControlInput1" name="quantity">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary btn-block">
+                            Add Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $('.myTooltipTooglebutton').tooltip()
+</script>
 {% endblock %}

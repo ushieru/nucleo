@@ -63,7 +63,7 @@ def signin():
                     return redirect(url_for("root.nucleo"))
             else:
                 cursor.execute(
-                    "SELECT `id`, `nombre`, `password`, `change_password` FROM `com_nucleo_medico_empleados` WHERE `com_nucleo_medico_empleados`.`correo` LIKE %s", (request.form['email']))
+                    "SELECT `id`, `nombre`, `password`, `change_password`, `id_own` FROM `com_nucleo_medico_empleados` WHERE `com_nucleo_medico_empleados`.`correo` LIKE %s", (request.form['email']))
 
                 empleado = cursor.fetchone()
 
@@ -71,6 +71,7 @@ def signin():
                     if bcrypt.check_password_hash(empleado[2], request.form['password']):
                         session['id'] = empleado[0]
                         session['name'] = empleado[1]
+                        session['id_own'] = empleado[4]
                         session['isDoctor'] = False
                         if empleado[3] == 1:
                             return redirect(url_for("index.changePassword"))
