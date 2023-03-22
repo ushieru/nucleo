@@ -16,9 +16,9 @@ app.config.update(dict(
     MAIL_PORT=587,
     MAIL_USE_TLS=True,
     MAIL_USE_SSL=False,
-    MAIL_USERNAME='nucleo.medico.une@gmail.com',
-    MAIL_PASSWORD='nucleoMedico123',
-    MAIL_DEFAULT_SENDER='nucleo.medico.une@gmail.com'
+    MAIL_USERNAME='******',
+    MAIL_PASSWORD='******',
+    MAIL_DEFAULT_SENDER='******'
 ))
 
 
